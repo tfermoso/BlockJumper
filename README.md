@@ -7,8 +7,8 @@ Just a proyect where you need to jump over boxes falling from the above, if you 
 ## @TODO
 - Make a good README
 - Write all the TODO things
-- Starting it
-- Basic movement and gravity
+- ~~Starting it~~
+- ~~Basic movement and gravity~~
 - Boxes falling and stacking
 - Movement working with boxes
 - Lose when hit by one
@@ -25,3 +25,4 @@ Just a proyect where you need to jump over boxes falling from the above, if you 
 - Unlock stuff (With coins? maybe?)
 - Random coins?
 - Maybe more modes for playing
+- A cool icon
