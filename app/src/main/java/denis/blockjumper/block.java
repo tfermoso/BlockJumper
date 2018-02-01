@@ -15,6 +15,7 @@ public class block {
     int x = 0, y = 0;
     int ySpeed = 0;
     int width = 100, height = 100;
+    boolean fixed = false;
 
     public block(GameView gameView, int x) {
         this.gameView = gameView;
@@ -22,13 +23,20 @@ public class block {
     }
 
     public void draw(Canvas canvas) {
-        if (ySpeed < gameView.GRAVITY){
-            ySpeed++;
+        if (!fixed) {
+            if (ySpeed < gameView.GRAVITY) {
+                ySpeed++;
+            }
+            y = y + ySpeed;
+            if (y >= gameView.getHeight()-height){
+                y = gameView.getHeight()-height;
+                fixed=true;
+            }
         }
-        y = y+ySpeed;
         paint.setColor(Color.CYAN);
         paint.setStrokeWidth(3);
-        canvas.drawRect(x, y, x+width, y+height, paint);
+        canvas.drawRect(x, y, x + width, y + height, paint);
+
     }
 
     public int getY() {

@@ -25,7 +25,15 @@ public class GameView extends SurfaceView {
     private PlayerSprite playerSprite;
     public int GRAVITY = 50;
     private int WIDTH;
+
+    private int numberOfColumns = 6;
+
+    private int columns[]={0,0,0,0,0,0};
+
     private List<block> blockList;
+    private Random rm = new Random();
+    private int i = 0;
+    private int MAX_TO_BOX = 70;
 
     public GameView(final Context context) {
         super(context);
@@ -35,7 +43,10 @@ public class GameView extends SurfaceView {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
                 WIDTH = self.getWidth();
-
+                int tempwidth = WIDTH/numberOfColumns;
+                for (int i = 1; i<=numberOfColumns;i++){
+                    columns[i-1] = tempwidth*i;
+                }
                 if (gameLoopThread == null || !gameLoopThread.isRunning()) {
                     gameLoopThread = new GameLoopThread(self);
                 }
@@ -67,10 +78,6 @@ public class GameView extends SurfaceView {
             }
         });
 
-    }
-
-    public List<block> getBlockList() {
-        return blockList;
     }
 
     @Override
@@ -117,6 +124,15 @@ public class GameView extends SurfaceView {
         super.draw(canvas);
         canvas.drawColor(Color.BLACK);
         playerSprite.draw(canvas);
+        i++;
+        if (i > MAX_TO_BOX) {
+            int random = rm.nextInt(numberOfColumns);
+            blockList.add(new block(this, columns[random]));
+            i = 0;
+            if (MAX_TO_BOX > 20) {
+                MAX_TO_BOX--;
+            }
+        }
         for (block blo : blockList) {
             blo.draw(canvas);
         }

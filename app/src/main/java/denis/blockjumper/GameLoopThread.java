@@ -32,23 +32,11 @@ public class GameLoopThread extends Thread {
         long tiksPS = 1000 / FPS;
         long startTime;
         long sleepTime;
-        int i = 0;
-
-        int MAX_TO_BOX = 70;
 
         while (running) {
             Canvas c = null;
             startTime = System.currentTimeMillis();
             try {
-                i++;
-                if (i > MAX_TO_BOX) {
-                    Random rm = new Random();
-                    view.getBlockList().add(new block(view, rm.nextInt(view.getWidth())));
-                    i = 0;
-                    if (MAX_TO_BOX > 0) {
-                        MAX_TO_BOX--;
-                    }
-                }
                 c = view.getHolder().lockCanvas();
                 synchronized (view.getHolder()) {
                     if (c != null) {
