@@ -51,33 +51,13 @@ class PlayerSprite {
         int newX = x;
         int newY = y;
 
-        if (newY >= MAP_HEIGHT - height - ySpeed) {
-            newY = MAP_HEIGHT - height - ySpeed;
-            if (jumped) {
-                ySpeed = -ySpeed / 2;
-                canJump = true;
-                jumped = false;
-            } else {
-                jumped = true;
-            }
-        } else {
-            // Si está en el aire, aumentamos la gravedad hasta el máximo
-            if (ySpeed < gameView.GRAVITY) {
-                ySpeed += 4;
-            }
-            if (ySpeed > gameView.GRAVITY) {
-                ySpeed = gameView.GRAVITY;
-            }
-        }
         // Comprobamos el bote en caso de haber
-        System.out.println((newX <= 0 + xSpeed) + " - " + newX + " - " + xSpeed);
         if (newX >= MAP_WIDTH - width - xSpeed) {
             xSpeed = -xSpeed / 2;
         } else if (newX <= 0 - xSpeed) {
             System.out.println("Esto se está cumpliendo");
             xSpeed = -xSpeed / 2;
         }
-        System.out.println(xSpeed);
 
         // Movemos horizontalmente
         if (moving == -1) {
@@ -99,6 +79,28 @@ class PlayerSprite {
                 xSpeed -= 2;
             } else if (xSpeed < 0) {
                 xSpeed += 2;
+            }
+        }
+
+        int comp = gameView.isTouchingGround(newX, newY+height+ySpeed,width);
+        if (comp > -1) {
+            System.out.println("Tocando suelo");
+//        if (newY >= MAP_HEIGHT - height - ySpeed) {
+            newY = comp - height-ySpeed;
+            if (jumped) {
+                ySpeed = -ySpeed / 2;
+                canJump = true;
+                jumped = false;
+            } else {
+                jumped = true;
+            }
+        } else {
+            // Si está en el aire, aumentamos la gravedad hasta el máximo
+            if (ySpeed < gameView.GRAVITY) {
+                ySpeed += 4;
+            }
+            if (ySpeed > gameView.GRAVITY) {
+                ySpeed = gameView.GRAVITY;
             }
         }
 

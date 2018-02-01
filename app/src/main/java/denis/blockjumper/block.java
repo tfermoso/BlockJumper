@@ -10,16 +10,19 @@ import android.graphics.Rect;
  */
 
 public class block {
+    private int position;
     private Paint paint = new Paint();
     private GameView gameView;
-    int x = 0, y = 0;
     int ySpeed = 0;
     int width = 100, height = 100;
+    int x = 0, y = 0-height;
     boolean fixed = false;
 
-    public block(GameView gameView, int x) {
+    public block(GameView gameView, int position,int width) {
         this.gameView = gameView;
-        this.x = x;
+        this.position = position;
+        this.x = gameView.getColumns()[position];
+        this.width = width;
     }
 
     public void draw(Canvas canvas) {
@@ -28,9 +31,11 @@ public class block {
                 ySpeed++;
             }
             y = y + ySpeed;
-            if (y >= gameView.getHeight()-height){
-                y = gameView.getHeight()-height;
+            System.out.println(gameView.getRows()[position]-height);
+            if (y >= gameView.getRows()[position]-height){
+                y = gameView.getRows()[position]-height;
                 fixed=true;
+                gameView.setRows(position,height);
             }
         }
         paint.setColor(Color.CYAN);
@@ -41,5 +46,9 @@ public class block {
 
     public int getY() {
         return y;
+    }
+
+    public int getHeight() {
+        return height;
     }
 }

@@ -27,8 +27,9 @@ public class GameView extends SurfaceView {
     private int WIDTH;
 
     private int numberOfColumns = 6;
-
-    private int columns[]={0,0,0,0,0,0};
+    private int columnWidth;
+    private int columns[];
+    private int rows[];
 
     private List<block> blockList;
     private Random rm = new Random();
@@ -43,9 +44,12 @@ public class GameView extends SurfaceView {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
                 WIDTH = self.getWidth();
-                int tempwidth = WIDTH/numberOfColumns;
-                for (int i = 1; i<=numberOfColumns;i++){
-                    columns[i-1] = tempwidth*i;
+                columnWidth = WIDTH / numberOfColumns;
+                columns = new int[numberOfColumns];
+                rows = new int[numberOfColumns];
+                for (int i = 0; i < numberOfColumns; i++) {
+                    columns[i] = columnWidth * i;
+                    rows[i] = self.getHeight();
                 }
                 if (gameLoopThread == null || !gameLoopThread.isRunning()) {
                     gameLoopThread = new GameLoopThread(self);
@@ -119,22 +123,73 @@ public class GameView extends SurfaceView {
         return super.onTouchEvent(event);
     }
 
-    @Override
-    public void draw(Canvas canvas) {
-        super.draw(canvas);
-        canvas.drawColor(Color.BLACK);
-        playerSprite.draw(canvas);
+    private void addBlock() {
         i++;
         if (i > MAX_TO_BOX) {
             int random = rm.nextInt(numberOfColumns);
-            blockList.add(new block(this, columns[random]));
+            block blo = new block(this, random, columnWidth);
+            blockList.add(blo);
             i = 0;
             if (MAX_TO_BOX > 20) {
                 MAX_TO_BOX--;
             }
         }
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
+        super.draw(canvas);
+        canvas.drawColor(Color.BLACK);
+        addBlock();
         for (block blo : blockList) {
             blo.draw(canvas);
+        }
+        playerSprite.draw(canvas);
+    }
+
+    public int[] getColumns() {
+        return columns;
+    }
+
+    public int[] getRows() {
+        return rows;
+    }
+
+    public void setRows(int index, int value) {
+        rows[index] -= value;
+    }
+
+    public int isTouchingGround(int newX, int newY, int width) {
+        int wich = numberOfColumns - 1;
+        boolean both = false;
+        for (int i = 0; i < numberOfColumns; i++) {
+            if (newX < columns[i]) {
+                if (newX + width > columns[i]) {
+                    both = true;
+                }
+                if (i == 0) {
+                    wich = 0;
+                } else {
+                    wich = i - 1;
+                }
+                break;
+            }
+        }
+        if (both) {
+            if (rows[wich] < rows[wich + 1]) {
+                if (newY >= rows[wich]) {
+                    return rows[wich];
+                }
+            } else {
+                if (newY >= rows[wich + 1]) {
+                    return rows[wich + 1];
+                }
+            }
+        }
+        if (newY >= rows[wich]) {
+            return rows[wich];
+        } else {
+            return -1;
         }
     }
 }
