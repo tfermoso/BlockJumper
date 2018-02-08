@@ -16,7 +16,7 @@ class PlayerSprite {
     private int x = 0, y = 0, xSpeed = 0, ySpeed = 0;
     private int MAP_WIDTH, MAP_HEIGHT, width, height;
     private int currentColumn = 1, currentRow = 0;
-    private boolean canJump = false, jumped = false;
+    private boolean canJump = false, jumped = false, touchedBlockX = false, touchedBlockY = false;
     private GameView gameView;
     private Bitmap bmp;
     private int moving = 0;
@@ -87,27 +87,37 @@ class PlayerSprite {
 
         block comp = gameView.isTouchingBlock(rec);
         if (comp != null) {
-            if (comp.getX() >= newX && comp.getY() < newY) {
-                // Está a la derecha
-                newX = comp.getX() - width;
-//                xSpeed = -xSpeed / 2;
-                xSpeed=0;
-            } else if (comp.getX() + comp.getWidth() <= newX + width && comp.getY() < newY) {
-                // Está a la izquierda
-                newX = comp.getX() + comp.getWidth();
-//                xSpeed = -xSpeed / 2;
-                xSpeed=0;
-            } else if (comp.getY() >= newY && comp.getX() < newX && comp.getX() + comp.getWidth() > newX) {
-                // Está debajo
-                newY = comp.getY() - height;
+            if (newX <= comp.getX() && newY + height > comp.getY()) {
+                // Estás a la izquierda, bloque a la derecha
+                System.out.println("IZQUIERDA");
 
-//                ySpeed = -ySpeed / 2;
-                ySpeed=0;
-                canJump = true;
+                newX = comp.getX() - width - xSpeed;
+                if (moving == 1) {
+                    xSpeed = -xSpeed / 2;
+                }
+                newX = newX + xSpeed;
+            } else if (newX + width >= comp.getX() + comp.getWidth() && newY + height > comp.getY()) {
+                // Estas a la derecha, bloque a la izquierda
+                System.out.println("DERECHA");
+                newX = comp.getX() + comp.getWidth() + xSpeed;
+                if (moving == -1) {
+                    xSpeed = -xSpeed / 2;
+                }
+                newX = newX + xSpeed;
+            } else
+            if (newY < comp.getY() && newX < comp.getX() + comp.getWidth() && newX > comp.getX()) {
+                // Estas encima, bloque debajo
+                newY = comp.getY() - height;
+                ySpeed = -ySpeed / 2;
                 jumped = false;
-            } else if (comp.getY() + comp.getHeight() <= newY) {
-                // Está encima
+
+                newY = newY + ySpeed;
+
+            } else if (newY + height > comp.getY() + comp.getHeight()) {
+                // Estas debajo, bloque encima
+
             }
+
         } else {
             if (newY > MAP_HEIGHT - height) {
                 newY = MAP_HEIGHT - height;
@@ -119,6 +129,7 @@ class PlayerSprite {
                 newY = MAP_HEIGHT - height - ySpeed;
                 if (jumped) {
 //                    ySpeed = -ySpeed / 2;
+                    ySpeed = 0;
                     canJump = true;
                     jumped = false;
                 } else {
@@ -133,9 +144,9 @@ class PlayerSprite {
                     ySpeed = gameView.GRAVITY;
                 }
             }
-        }
             newX = newX + xSpeed;
             newY = newY + ySpeed;
+        }
 
         x = newX;
         y = newY;
