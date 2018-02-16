@@ -10,7 +10,7 @@ Just a proyect where you need to jump over boxes falling from the above, if you 
 - ~~Starting it~~
 - ~~Basic movement and gravity~~
 - ~~Boxes falling and stacking~~
-- Movement working with boxes
+- ~~Movement working with boxes~~
 - Lose when hit by one
 - Camera move when complete row
 - Difficult incremental
