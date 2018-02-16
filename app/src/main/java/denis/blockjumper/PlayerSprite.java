@@ -6,6 +6,8 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.view.Gravity;
 
+import java.util.ArrayList;
+
 /**
  * Created by denis.couñago on 26/01/2018.
  */
@@ -16,7 +18,7 @@ class PlayerSprite {
     private int x = 0, y = 0, xSpeed = 0, ySpeed = 0;
     private int MAP_WIDTH, MAP_HEIGHT, width, height;
     private int currentColumn = 1, currentRow = 0;
-    private boolean canJump = false, jumped = false;
+    private boolean canJump = false;
     private GameView gameView;
     private Bitmap bmp;
     private int moving = 0;
@@ -51,15 +53,7 @@ class PlayerSprite {
     private void update() {
         int newX = x;
         int newY = y;
-        // Comprobamos el bote en caso de haber
-        if (newX >= MAP_WIDTH - width - xSpeed) {
-            newX = MAP_WIDTH - width;
-//            xSpeed = -xSpeed / 2;
-        } else if (newX <= 0 - xSpeed) {
-            newX = 0;
-//            xSpeed = -xSpeed / 2;
-        }
-        // Movemos horizontalmente
+
         if (moving == -1) {
             currentRow = 1;
             animationOrder = -1;
@@ -76,69 +70,73 @@ class PlayerSprite {
             currentRow = 0;
             animationOrder = 0;
             if (xSpeed > 0) {
-                xSpeed -= 2;
+                xSpeed = (xSpeed > 1) ? xSpeed - 2 : 0;
             } else if (xSpeed < 0) {
-                xSpeed += 2;
+                xSpeed = (xSpeed < -1) ? xSpeed + 2 : 0;
             }
         }
 
-        // Comprobamos que sprite debe cargar
-        changeFrame();
-
-        block comp = gameView.isTouchingBlock(rec);
-        if (comp != null) {
-            if (comp.getX() >= newX && comp.getY() < newY) {
-                // Está a la derecha
-                newX = comp.getX() - width;
-//                xSpeed = -xSpeed / 2;
-                xSpeed=0;
-            } else if (comp.getX() + comp.getWidth() <= newX + width && comp.getY() < newY) {
-                // Está a la izquierda
-                newX = comp.getX() + comp.getWidth();
-//                xSpeed = -xSpeed / 2;
-                xSpeed=0;
-            } else if (comp.getY() >= newY && comp.getX() < newX && comp.getX() + comp.getWidth() > newX) {
-                // Está debajo
-                newY = comp.getY() - height;
-
-//                ySpeed = -ySpeed / 2;
-                ySpeed=0;
+        if (newY >= MAP_HEIGHT - height - ySpeed) {
+            newY = MAP_HEIGHT - height;
+            ySpeed = (ySpeed > 3 || ySpeed < -3) ? -ySpeed / 3 : 0;
+            if (!canJump) {
                 canJump = true;
-                jumped = false;
-            } else if (comp.getY() + comp.getHeight() <= newY) {
-                // Está encima
             }
         } else {
-            if (newY > MAP_HEIGHT - height) {
-                newY = MAP_HEIGHT - height;
+            // Si está en el aire, aumentamos la gravedad hasta el máximo
+            if (ySpeed < gameView.GRAVITY) {
+                ySpeed += 4;
+            } else if (ySpeed > gameView.GRAVITY) {
+                ySpeed = gameView.GRAVITY;
             }
-//            int compY = gameView.isTouchingGround(newX, newY + height + ySpeed, width - 2);
-//            if (compY > -1) {
-            if (newY >= MAP_HEIGHT - height - ySpeed) {
-//                newY = compY - height - ySpeed;
-                newY = MAP_HEIGHT - height - ySpeed;
-                if (jumped) {
-//                    ySpeed = -ySpeed / 2;
-                    canJump = true;
-                    jumped = false;
-                } else {
-                    jumped = true;
-                }
-            } else {
-                // Si está en el aire, aumentamos la gravedad hasta el máximo
-                if (ySpeed < gameView.GRAVITY) {
-                    ySpeed += 4;
-                }
-                if (ySpeed > gameView.GRAVITY) {
-                    ySpeed = gameView.GRAVITY;
+        }
+        if (newX >= MAP_WIDTH - width - xSpeed) {
+            newX = MAP_WIDTH - width;
+            xSpeed = (xSpeed > 3 || xSpeed < -3) ? -xSpeed / 3 : 0;
+        } else if (newX <= 0 - xSpeed) {
+            newX = 0;
+            xSpeed = (xSpeed > 3 || xSpeed < -3) ? -xSpeed / 3 : 0;
+        }
+
+        Rect temprec = new Rect(newX + xSpeed, newY + ySpeed, newX + xSpeed + width, newY + ySpeed + height);
+        for (ArrayList<block> ar : gameView.getColumnsBlock()) {
+            for (block comp : ar) {
+                if (comp.isIntersection(temprec)) {
+                    if (newY + height > comp.getY() + comp.getHeight() &&
+                            newX + width - 10 > comp.getX() &&
+                            newX < comp.getX() + comp.getWidth() - 10) {
+                        System.out.println("You lost");
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    } else if (newX <= comp.getX() && newY + height - 10 > comp.getY()) {
+                        // Estás a la izquierda, bloque a la derecha
+                        System.out.println("Left");
+                        newX = comp.getX() - width;
+                        xSpeed = (xSpeed > 3 || xSpeed < -3) ? -xSpeed / 3 : 0;
+                    } else if (newX + width > comp.getX() + comp.getWidth() && newY + height - 10 > comp.getY()) {
+                        // Estas a la derecha, bloque a la izquierda
+                        System.out.println("Right");
+                        newX = comp.getX() + comp.getWidth();
+                        xSpeed = (xSpeed > 3 || xSpeed < -3) ? -xSpeed / 3 : 0;
+                    } else if (newY < comp.getY() + 10) {
+                        // Estas encima, bloque debajo
+                        System.out.println("Up");
+                        newY = comp.getY() - height;
+                        ySpeed = (ySpeed > 4 || ySpeed < -4) ? -ySpeed / 4 : 0;
+                        canJump = true;
+                    } else {
+                        System.out.println("Huh? where I am?");
+                    }
                 }
             }
         }
-            newX = newX + xSpeed;
-            newY = newY + ySpeed;
 
-        x = newX;
-        y = newY;
+        x = newX + xSpeed;
+        y = newY + ySpeed;
+        changeFrame();
     }
 
     public void jump() {

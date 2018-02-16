@@ -134,7 +134,6 @@ public class GameView extends SurfaceView {
             int random = rm.nextInt(numberOfColumns);
             block blo = new block(this, random, columnWidth);
             columnsBlock.get(random).add(blo);
-//            blockList.add(blo);
             i = 0;
             if (MAX_TO_BOX > 20) {
                 MAX_TO_BOX--;
@@ -147,12 +146,33 @@ public class GameView extends SurfaceView {
         super.draw(canvas);
         canvas.drawColor(Color.BLACK);
         addBlock();
+        drawblock(canvas);
+
+        playerSprite.draw(canvas);
+    }
+
+    private void drawblock(Canvas canvas) {
+        int comp = 0;
         for (ArrayList<block> Ablo : columnsBlock) {
+            if (Ablo.size() > 1) {
+                comp++;
+            }
             for (block blo : Ablo) {
                 blo.draw(canvas);
             }
         }
-        playerSprite.draw(canvas);
+//        if (comp == 6) {
+//            System.out.println("VOY A ELEMINAR LA LINA DE ABAJO! COÑO");
+//            for (ArrayList<block> Ablo : columnsBlock) {
+//                Ablo.remove(0);
+//                for (block blo : Ablo) {
+//                    blo.setFixed(false);
+//                }
+//            }
+//            for (int j = 0; j < columns.length; j++) {
+//                columns[j] -= 100;
+//            }
+//        }
     }
 
     public int[] getColumns() {
@@ -167,76 +187,8 @@ public class GameView extends SurfaceView {
         rows[index] -= value;
     }
 
-    public block isTouchingBlock(Rect rec) {
-        for (List<block> Lbloc : columnsBlock) {
-            for (block blo : Lbloc) {
-                if (blo.isIntersection(rec)) {
-                    return blo;
-                }
-            }
-        }
-        return null;
+    public ArrayList<ArrayList<block>> getColumnsBlock() {
+        return columnsBlock;
     }
-//    public int isTouchingGround(int newX, int newY, int width) {
-//        int wich = numberOfColumns - 1;
-//        boolean both = false;
-//        for (int i = 0; i < numberOfColumns; i++) {
-//            if (newX < columns[i]) {
-//                // Comprobamos si está en 2 cuadrados diferentes
-//                if (newX + width > columns[i]) {
-//                    both = true;
-//                }
-//                if (i == 0) {
-//                    wich = 0;
-//                } else {
-//                    wich = i - 1;
-//                }
-//                break;
-//            }
-//        }
-//        // Si está en 2 cuadrados diferentes la altura será el de la más alta
-//        if (both) {
-//            if (rows[wich] < rows[wich + 1]) {
-//                if (newY >= rows[wich]) {
-//                    return rows[wich];
-//                }
-//            } else {
-//                if (newY >= rows[wich + 1]) {
-//                    return rows[wich + 1];
-//                }
-//            }
-//        }
-//        if (newY >= rows[wich]) {
-//            return rows[wich];
-//        } else {
-//            return -1;
-//        }
-//    }
-//
-//    public int isTouchingWall(int x, int y, int width) {
-//        int wich = numberOfColumns - 1;
-//        for (int i = 0; i < numberOfColumns; i++) {
-//            if (x < columns[i]) {
-//                // Comprobamos si está en 2 cuadrados diferentes
-//                if (i == 0) {
-//                    wich = 0;
-//                } else {
-//                    wich = i - 1;
-//                }
-//                break;
-//            }
-//        }
-//        System.out.println(columns[wich] + " - " + x + " - " + rows[wich] + " - " + y);
-//        if (wich > 0 && columns[wich] >= x) {
-//            if (rows[wich - 1] < y) {
-//                return -1;
-//            }
-//        }
-//        if (width < numberOfColumns && columns[wich] + columnWidth <= x + width) {
-//            if (rows[wich + 1] < y) {
-//                return 1;
-//            }
-//        }
-//        return 0;
-//    }
+
 }

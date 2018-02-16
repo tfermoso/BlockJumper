@@ -33,7 +33,6 @@ public class block {
                 ySpeed++;
             }
             y = y + ySpeed;
-            System.out.println(gameView.getRows()[position]-height);
             if (y >= gameView.getRows()[position]-height){
                 y = gameView.getRows()[position]-height;
                 fixed=true;
@@ -46,6 +45,11 @@ public class block {
         canvas.drawRect(rec, paint);
 
     }
+
+    public void setFixed(boolean fixed) {
+        this.fixed = fixed;
+    }
+
     public boolean isIntersection(Rect rec){
         if (this.rec.intersect(rec)){
             return true;
