@@ -106,24 +106,21 @@ class PlayerSprite {
                             newX + width - 10 > comp.getX() &&
                             newX < comp.getX() + comp.getWidth() - 10) {
                         System.out.println("You lost");
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+//                        try {
+//                            Thread.sleep(500);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
                     } else if (newX <= comp.getX() && newY + height - 10 > comp.getY()) {
                         // Estás a la izquierda, bloque a la derecha
-                        System.out.println("Left");
                         newX = comp.getX() - width;
                         xSpeed = (xSpeed > 3 || xSpeed < -3) ? -xSpeed / 3 : 0;
                     } else if (newX + width > comp.getX() + comp.getWidth() && newY + height - 10 > comp.getY()) {
                         // Estas a la derecha, bloque a la izquierda
-                        System.out.println("Right");
                         newX = comp.getX() + comp.getWidth();
                         xSpeed = (xSpeed > 3 || xSpeed < -3) ? -xSpeed / 3 : 0;
                     } else if (newY < comp.getY() + 10) {
                         // Estas encima, bloque debajo
-                        System.out.println("Up");
                         newY = comp.getY() - height;
                         ySpeed = (ySpeed > 4 || ySpeed < -4) ? -ySpeed / 4 : 0;
                         canJump = true;

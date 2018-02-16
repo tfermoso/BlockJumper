@@ -12,14 +12,15 @@ Just a proyect where you need to jump over boxes falling from the above, if you 
 - ~~Boxes falling and stacking~~
 - ~~Movement working with boxes~~
 - Lose when hit by one
-- Camera move when complete row
-- Difficult incremental
+- ~~Delete bottom row when complete above row~~
+- ~~Difficult incremental~~ (But need some improvement)
 - Main menu
 
 ### Future / Not important
 - Refine all movement
 - Points system
 - Online HighScore
+- Difficult incremental improvement
 - New Colors and Sprites (Let's make it looks cool)
 - Intuitive controls
 - Unlock stuff (With coins? maybe?)

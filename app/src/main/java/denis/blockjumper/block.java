@@ -14,11 +14,11 @@ public class block {
     private int position;
     private Paint paint = new Paint();
     private GameView gameView;
-    int ySpeed = 0;
-    int width = 100, height = 100;
-    int x = 0, y = 0-height;
-    boolean fixed = false;
-    Rect rec;
+    private int ySpeed = 0;
+    private int width = 100, height = 100;
+    private int x = 0, y = 0-height;
+    private boolean fixed = false;
+    private Rect rec;
 
     public block(GameView gameView, int position,int width) {
         this.gameView = gameView;
@@ -48,6 +48,9 @@ public class block {
 
     public void setFixed(boolean fixed) {
         this.fixed = fixed;
+    }
+    public boolean isFixed() {
+        return fixed;
     }
 
     public boolean isIntersection(Rect rec){

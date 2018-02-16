@@ -26,7 +26,7 @@ public class GameView extends SurfaceView {
     private GameView self = this;
     private PlayerSprite playerSprite;
     public int GRAVITY = 50;
-    private int WIDTH;
+    private int WIDTH, HEIGHT;
 
     private int numberOfColumns = 6;
     private int columnWidth;
@@ -34,19 +34,19 @@ public class GameView extends SurfaceView {
     private ArrayList<ArrayList<block>> columnsBlock;
     private int rows[];
 
-    //    private List<block> blockList;
     private Random rm = new Random();
     private int i = 0;
-    private int MAX_TO_BOX = 70;
+//    private int MAX_TO_BOX = 70;
+    private int MAX_TO_BOX = 50;
 
     public GameView(final Context context) {
         super(context);
         holder = getHolder();
-//        blockList = new ArrayList<block>();
         holder.addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
                 WIDTH = self.getWidth();
+                HEIGHT = self.getHeight();
                 columnWidth = WIDTH / numberOfColumns;
                 columns = new int[numberOfColumns];
                 columnsBlock = new ArrayList<>();
@@ -105,12 +105,12 @@ public class GameView extends SurfaceView {
                 } catch (IllegalArgumentException ex) {
                     x = event.getX();
                 }
-                int each = WIDTH / 3;
+                int each = WIDTH / 5;
                 if (x < each) {
                     if (playerSprite.getMoving() != -1) {
                         playerSprite.move(-1);
                     }
-                } else if (x > each * 2) {
+                } else if (x > each * 4) {
                     if (playerSprite.getMoving() != 1) {
                         playerSprite.move(1);
                     }
@@ -132,10 +132,13 @@ public class GameView extends SurfaceView {
         i++;
         if (i > MAX_TO_BOX) {
             int random = rm.nextInt(numberOfColumns);
+            while (rows[random] <= HEIGHT / 3) {
+                random = rm.nextInt(numberOfColumns);
+            }
             block blo = new block(this, random, columnWidth);
             columnsBlock.get(random).add(blo);
             i = 0;
-            if (MAX_TO_BOX > 20) {
+            if (MAX_TO_BOX > 15) {
                 MAX_TO_BOX--;
             }
         }
@@ -154,25 +157,25 @@ public class GameView extends SurfaceView {
     private void drawblock(Canvas canvas) {
         int comp = 0;
         for (ArrayList<block> Ablo : columnsBlock) {
-            if (Ablo.size() > 1) {
+            if (Ablo.size() > 1 && Ablo.get(1).isFixed()) {
                 comp++;
             }
             for (block blo : Ablo) {
                 blo.draw(canvas);
             }
         }
-//        if (comp == 6) {
-//            System.out.println("VOY A ELEMINAR LA LINA DE ABAJO! COÑO");
-//            for (ArrayList<block> Ablo : columnsBlock) {
-//                Ablo.remove(0);
-//                for (block blo : Ablo) {
-//                    blo.setFixed(false);
-//                }
-//            }
-//            for (int j = 0; j < columns.length; j++) {
-//                columns[j] -= 100;
-//            }
-//        }
+        if (comp == 6) {
+            System.out.println("Deleting bottom");
+            for (ArrayList<block> Ablo : columnsBlock) {
+                Ablo.remove(0);
+                for (block blo : Ablo) {
+                    blo.setFixed(false);
+                }
+            }
+            for (int j = 0; j < rows.length; j++) {
+                rows[j] = HEIGHT;
+            }
+        }
     }
 
     public int[] getColumns() {
