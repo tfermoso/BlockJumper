@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.view.Gravity;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -18,7 +19,7 @@ class PlayerSprite {
     private int x = 0, y = 0, xSpeed = 0, ySpeed = 0;
     private int MAP_WIDTH, MAP_HEIGHT, width, height;
     private int currentColumn = 1, currentRow = 0;
-    private boolean canJump = false;
+    private boolean canJump = false, ended = false;
     private GameView gameView;
     private Bitmap bmp;
     private int moving = 0;
@@ -106,11 +107,7 @@ class PlayerSprite {
                             newX + width - 10 > comp.getX() &&
                             newX < comp.getX() + comp.getWidth() - 10) {
                         System.out.println("You lost");
-//                        try {
-//                            Thread.sleep(500);
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
+                        ended = true;
                     } else if (newX <= comp.getX() && newY + height - 10 > comp.getY()) {
                         // Estás a la izquierda, bloque a la derecha
                         newX = comp.getX() - width;
@@ -150,6 +147,10 @@ class PlayerSprite {
         Rect src = new Rect(srcX, srcY, srcX + width, srcY + width);
         rec = new Rect(x, y, x + width, y + height);
         canvas.drawBitmap(bmp, src, rec, null);
+        if (ended){
+            gameView.endGame();
+            Toast.makeText(gameView.getContext(),"Puntos: "+gameView.getPoints(),Toast.LENGTH_LONG).show();
+        }
     }
 
     public void move(int i) {

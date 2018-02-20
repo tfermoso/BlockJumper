@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Toast;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ public class GameView extends SurfaceView {
     public int GRAVITY = 50;
     private int WIDTH, HEIGHT;
 
+    private int points = 0;
+
     private int numberOfColumns = 6;
     private int columnWidth;
     private int columns[];
@@ -36,7 +39,7 @@ public class GameView extends SurfaceView {
 
     private Random rm = new Random();
     private int i = 0;
-//    private int MAX_TO_BOX = 70;
+    //    private int MAX_TO_BOX = 70;
     private int MAX_TO_BOX = 50;
 
     public GameView(final Context context) {
@@ -150,7 +153,7 @@ public class GameView extends SurfaceView {
         canvas.drawColor(Color.BLACK);
         addBlock();
         drawblock(canvas);
-
+        points++;
         playerSprite.draw(canvas);
     }
 
@@ -186,6 +189,10 @@ public class GameView extends SurfaceView {
         return rows;
     }
 
+    public int getPoints() {
+        return points;
+    }
+
     public void setRows(int index, int value) {
         rows[index] -= value;
     }
@@ -194,4 +201,19 @@ public class GameView extends SurfaceView {
         return columnsBlock;
     }
 
+    public void endGame() {
+        System.out.println("Puntos: " + points);
+        boolean retry = true;
+        gameLoopThread.setRunning(false);
+        while (retry) {
+            try {
+                gameLoopThread.join();
+                retry = false;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("Saliendo");
+
+    }
 }
