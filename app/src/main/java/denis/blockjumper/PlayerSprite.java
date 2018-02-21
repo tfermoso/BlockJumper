@@ -149,7 +149,6 @@ class PlayerSprite {
         canvas.drawBitmap(bmp, src, rec, null);
         if (ended){
             gameView.endGame();
-            Toast.makeText(gameView.getContext(),"Puntos: "+gameView.getPoints(),Toast.LENGTH_LONG).show();
         }
     }
 

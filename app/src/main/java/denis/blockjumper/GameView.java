@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -62,11 +63,9 @@ public class GameView extends SurfaceView {
                 if (gameLoopThread == null || !gameLoopThread.isRunning()) {
                     gameLoopThread = new GameLoopThread(self);
                 }
-                if (gameLoopThread.getState() == Thread.State.NEW) {
-                    playerSprite = new PlayerSprite(self);
-                    gameLoopThread.setRunning(true);
-                    gameLoopThread.start();
-                }
+                playerSprite = new PlayerSprite(self);
+                gameLoopThread.setRunning(true);
+                gameLoopThread.execute();
             }
 
             @Override
@@ -78,15 +77,14 @@ public class GameView extends SurfaceView {
             public void surfaceDestroyed(SurfaceHolder holder) {
                 boolean retry = true;
                 gameLoopThread.setRunning(false);
-                while (retry) {
-                    try {
-                        gameLoopThread.join();
-                        retry = false;
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-
+//                while (retry) {
+//                    try {
+////                        gameLoopThread.join();
+//                        retry = false;
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
             }
         });
 
@@ -154,6 +152,10 @@ public class GameView extends SurfaceView {
         addBlock();
         drawblock(canvas);
         points++;
+        Paint paint = new Paint();
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(50);
+        canvas.drawText(points+"", 100, 100, paint);
         playerSprite.draw(canvas);
     }
 
@@ -189,10 +191,6 @@ public class GameView extends SurfaceView {
         return rows;
     }
 
-    public int getPoints() {
-        return points;
-    }
-
     public void setRows(int index, int value) {
         rows[index] -= value;
     }
@@ -205,15 +203,9 @@ public class GameView extends SurfaceView {
         System.out.println("Puntos: " + points);
         boolean retry = true;
         gameLoopThread.setRunning(false);
-        while (retry) {
-            try {
-                gameLoopThread.join();
-                retry = false;
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        System.out.println("Saliendo");
+    }
 
+    public void finalStop() {
+        Toast.makeText(getContext(), "test", Toast.LENGTH_LONG).show();
     }
 }
