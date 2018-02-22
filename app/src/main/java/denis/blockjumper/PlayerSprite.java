@@ -102,6 +102,13 @@ class PlayerSprite {
         Rect temprec = new Rect(newX + xSpeed, newY + ySpeed, newX + xSpeed + width, newY + ySpeed + height);
         for (ArrayList<block> ar : gameView.getColumnsBlock()) {
             for (block comp : ar) {
+                // Si no tiene posibilidades de tocarlo, no lo considero
+                if (comp.getX() + comp.getWidth() < newX ||
+                        comp.getWidth() > newX + width + xSpeed ||
+                        comp.getY() > newY + height + ySpeed ||
+                        comp.getY() + comp.getHeight() < newY) {
+                    continue;
+                }
                 if (comp.isIntersection(temprec)) {
                     if (newY + height > comp.getY() + comp.getHeight() &&
                             newX + width - 10 > comp.getX() &&
@@ -147,7 +154,7 @@ class PlayerSprite {
         Rect src = new Rect(srcX, srcY, srcX + width, srcY + width);
         rec = new Rect(x, y, x + width, y + height);
         canvas.drawBitmap(bmp, src, rec, null);
-        if (ended){
+        if (ended) {
             gameView.endGame();
         }
     }
