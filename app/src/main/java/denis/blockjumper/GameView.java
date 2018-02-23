@@ -3,9 +3,13 @@ package denis.blockjumper;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -40,6 +44,7 @@ public class GameView extends SurfaceView {
     private int i = 0;
     private int MAX_TO_BOX = 50;
     private boolean created = false;
+    private Bitmap background;
 
     public GameView(final Context context) {
         super(context);
@@ -57,6 +62,12 @@ public class GameView extends SurfaceView {
                     points = 0;
                     WIDTH = self.getWidth();
                     HEIGHT = self.getHeight();
+
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.outHeight = WIDTH;
+                    options.outWidth = HEIGHT;
+                    background = BitmapFactory.decodeResource(getResources(), R.drawable.background, options);
+
                     columnWidth = WIDTH / numberOfColumns;
                     columns = new int[numberOfColumns];
                     columnsBlock = new ArrayList<>();
@@ -157,7 +168,8 @@ public class GameView extends SurfaceView {
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
-        canvas.drawColor(Color.BLACK);
+//        canvas.drawColor(Color.BLACK);
+        canvas.drawBitmap(background,0,0,null);
         addBlock();
         drawblock(canvas);
         playerSprite.draw(canvas);
@@ -224,7 +236,7 @@ public class GameView extends SurfaceView {
             editor.putInt("score", points);
             editor.apply();
         }
-        Toast.makeText(getContext(), "Puntos: "+points, Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), "Puntos: " + points, Toast.LENGTH_LONG).show();
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {

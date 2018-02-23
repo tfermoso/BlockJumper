@@ -103,10 +103,10 @@ class PlayerSprite {
         for (ArrayList<block> ar : gameView.getColumnsBlock()) {
             for (block comp : ar) {
                 // Si no tiene posibilidades de tocarlo, no lo considero
-                if (comp.getX() + comp.getWidth() < newX ||
-                        comp.getWidth() > newX + width + xSpeed ||
+                if (comp.getX() + comp.getWidth() < newX + xSpeed ||
+                        comp.getX() > newX + width + xSpeed ||
                         comp.getY() > newY + height + ySpeed ||
-                        comp.getY() + comp.getHeight() < newY) {
+                        comp.getY() + comp.getHeight() < newY + ySpeed) {
                     continue;
                 }
                 if (comp.isIntersection(temprec)) {
