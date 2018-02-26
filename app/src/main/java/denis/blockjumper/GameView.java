@@ -8,8 +8,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
-import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -42,7 +40,7 @@ public class GameView extends SurfaceView {
     private int rows[];
     private Random rm = new Random();
     private int i = 0;
-    private int MAX_TO_BOX = 50;
+    private int BOX_INTERVAL = 50, MAX_INTERVAL_BOX = 100;
     private boolean created = false;
     private Bitmap background;
 
@@ -63,10 +61,11 @@ public class GameView extends SurfaceView {
                     WIDTH = self.getWidth();
                     HEIGHT = self.getHeight();
 
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.outHeight = WIDTH;
-                    options.outWidth = HEIGHT;
-                    background = BitmapFactory.decodeResource(getResources(), R.drawable.background, options);
+                    Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.background);
+                    float aspectRatio = b.getWidth() / (float) b.getHeight();
+                    int width = WIDTH;
+                    int height = Math.round(width / aspectRatio);
+                    background = Bitmap.createScaledBitmap(b, width, height, false);
 
                     columnWidth = WIDTH / numberOfColumns;
                     columns = new int[numberOfColumns];
@@ -151,7 +150,7 @@ public class GameView extends SurfaceView {
 
     private void addBlock() {
         i++;
-        if (i > MAX_TO_BOX) {
+        if (i > BOX_INTERVAL) {
             int random = rm.nextInt(numberOfColumns);
             while (rows[random] <= HEIGHT / 3) {
                 random = rm.nextInt(numberOfColumns);
@@ -159,9 +158,10 @@ public class GameView extends SurfaceView {
             block blo = new block(this, random, columnWidth);
             columnsBlock.get(random).add(blo);
             i = 0;
-            if (MAX_TO_BOX > 10) {
-                MAX_TO_BOX--;
-            }
+        }
+        if (points % MAX_INTERVAL_BOX == 0 && BOX_INTERVAL > 15) {
+            BOX_INTERVAL--;
+            GRAVITY++;
         }
     }
 
@@ -169,7 +169,7 @@ public class GameView extends SurfaceView {
     public void draw(Canvas canvas) {
         super.draw(canvas);
 //        canvas.drawColor(Color.BLACK);
-        canvas.drawBitmap(background,0,0,null);
+        canvas.drawBitmap(background, 0, 0, null);
         addBlock();
         drawblock(canvas);
         playerSprite.draw(canvas);

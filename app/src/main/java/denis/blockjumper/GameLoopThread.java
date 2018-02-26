@@ -12,7 +12,7 @@ import java.util.Random;
  */
 
 public class GameLoopThread extends AsyncTask {
-    private final long FPS = 60;
+    private final long FPS = 40;
     private GameView view;
     private boolean running = false;
 
