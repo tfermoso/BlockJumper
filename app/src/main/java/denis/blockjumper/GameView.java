@@ -16,6 +16,10 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Random;
 
+import denis.blockjumper.SpirtesClass.PlayerSprite;
+import denis.blockjumper.SpirtesClass.block;
+import denis.blockjumper.Thread.GameLoopThread;
+
 import static android.content.Context.MODE_PRIVATE;
 
 
@@ -29,7 +33,7 @@ public class GameView extends SurfaceView {
     private GameLoopThread gameLoopThread;
     private GameView self = this;
     private PlayerSprite playerSprite;
-    public int GRAVITY = 50;
+    public int GRAVITY = 40;
     private int WIDTH, HEIGHT;
     private int points = 0;
     private Paint pointsPaint = new Paint();
@@ -42,7 +46,7 @@ public class GameView extends SurfaceView {
     private int i = 0;
     private int BOX_INTERVAL = 50, MAX_INTERVAL_BOX = 100;
     private boolean created = false;
-    private Bitmap background;
+    private Bitmap background, block_image;
 
     public GameView(final Context context) {
         super(context);
@@ -65,9 +69,13 @@ public class GameView extends SurfaceView {
                     float aspectRatio = b.getWidth() / (float) b.getHeight();
                     int width = WIDTH;
                     int height = Math.round(width / aspectRatio);
-                    background = Bitmap.createScaledBitmap(b, width, height, false);
+                    background = Bitmap.createScaledBitmap(b, width, height, false).copy(Bitmap.Config.RGB_565,true);
 
                     columnWidth = WIDTH / numberOfColumns;
+
+                    Bitmap bl = BitmapFactory.decodeResource(getResources(), R.drawable.block_gameold).copy(Bitmap.Config.RGB_565,true);
+                    block_image = Bitmap.createScaledBitmap(bl, columnWidth, 100, false);
+
                     columns = new int[numberOfColumns];
                     columnsBlock = new ArrayList<>();
                     rows = new int[numberOfColumns];
@@ -155,7 +163,7 @@ public class GameView extends SurfaceView {
             while (rows[random] <= HEIGHT / 3) {
                 random = rm.nextInt(numberOfColumns);
             }
-            block blo = new block(this, random, columnWidth);
+            block blo = new block(this, random, columnWidth,block_image);
             columnsBlock.get(random).add(blo);
             i = 0;
         }
@@ -169,6 +177,7 @@ public class GameView extends SurfaceView {
     public void draw(Canvas canvas) {
         super.draw(canvas);
 //        canvas.drawColor(Color.BLACK);
+//        Rect rect = new Rect(0,0,WIDTH,HEIGHT);
         canvas.drawBitmap(background, 0, 0, null);
         addBlock();
         drawblock(canvas);
@@ -222,8 +231,7 @@ public class GameView extends SurfaceView {
     }
 
     public void endGame() {
-        System.out.println("Puntos: " + points);
-        boolean retry = true;
+        System.out.println("Points: " + points);
         gameLoopThread.setRunning(false);
     }
 

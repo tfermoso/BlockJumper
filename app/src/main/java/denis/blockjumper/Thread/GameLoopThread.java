@@ -1,4 +1,4 @@
-package denis.blockjumper;
+package denis.blockjumper.Thread;
 
 import android.graphics.Canvas;
 import android.os.AsyncTask;
@@ -7,12 +7,14 @@ import android.widget.Toast;
 import java.util.List;
 import java.util.Random;
 
+import denis.blockjumper.GameView;
+
 /**
  * Created by denis.couñago on 10/01/2018.
  */
 
 public class GameLoopThread extends AsyncTask {
-    private final long FPS = 40;
+    private final long FPS = 35; // Actua como velocidad del juego también
     private GameView view;
     private boolean running = false;
 
@@ -21,7 +23,7 @@ public class GameLoopThread extends AsyncTask {
     }
 
     public void setRunning(boolean running) {
-        System.out.println("Seteando runing "+running);
+        System.out.println("Seteando runing " + running);
         this.running = running;
     }
 
@@ -54,12 +56,15 @@ public class GameLoopThread extends AsyncTask {
                 }
             }
             sleepTime = tiksPS - (System.currentTimeMillis() - startTime);
+            System.out.println(tiksPS + " - " + (System.currentTimeMillis() - startTime) + " = " + sleepTime);
             try {
-                if (sleepTime > 20) {
+                if (sleepTime > 0) {
                     Thread.sleep(sleepTime);
-                } else {
-                    Thread.sleep(20);
                 }
+//                if (sleepTime > 10) {
+//                    Thread.sleep(10);
+//                } else if (sleepTime > 0) {
+//                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

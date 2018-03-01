@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "625093515834",
+    "firebase_url": "https://appfirebase-bbdf8.firebaseio.com",
+    "project_id": "appfirebase-bbdf8",
+    "storage_bucket": "appfirebase-bbdf8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:625093515834:android:f8069989f6c27519",
+        "android_client_info": {
+          "package_name": "denis.blockjumper"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "625093515834-dvmiblfmo7ij0836amiiocr54u1vfsms.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "denis.blockjumper",
+            "certificate_hash": "4afedf782f12777602f1a4b105a0f63e185d3592"
+          }
+        },
+        {
+          "client_id": "625093515834-jvskoscdt9h999psv5pbs8m24k67hhm4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMJ5WmYD7mXiZ-XUPldloly9lFdO7HY64"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "625093515834-jvskoscdt9h999psv5pbs8m24k67hhm4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

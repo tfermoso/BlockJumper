@@ -1,19 +1,21 @@
-package denis.blockjumper;
+package denis.blockjumper.SpirtesClass;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.view.Gravity;
-import android.widget.Toast;
 
 import java.util.ArrayList;
+
+import denis.blockjumper.GameView;
+import denis.blockjumper.R;
+import denis.blockjumper.SpirtesClass.block;
 
 /**
  * Created by denis.couñago on 26/01/2018.
  */
 
-class PlayerSprite {
+public class PlayerSprite {
     private static final int BMP_ROWS = 4, BMP_COLUMNS = 3;
     private static final int MAX_SPEED_X_L = -20, MAX_SPEED_X_R = 20;
     private int x = 0, y = 0, xSpeed = 0, ySpeed = 0;
@@ -114,7 +116,7 @@ class PlayerSprite {
                             newX + width - 20 > comp.getX() &&
                             newX < comp.getX() + comp.getWidth() - 20) {
                         System.out.println("You lost");
-                        ended = true;
+//                        ended = true;
                     } else if (newX <= comp.getX() && newY + height - 10 > comp.getY()) {
                         // Estás a la izquierda, bloque a la derecha
                         newX = comp.getX() - width;

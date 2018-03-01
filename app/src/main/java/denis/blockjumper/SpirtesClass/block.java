@@ -1,10 +1,13 @@
-package denis.blockjumper;
+package denis.blockjumper.SpirtesClass;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.support.constraint.solver.widgets.Rectangle;
+
+import denis.blockjumper.GameView;
 
 /**
  * Created by denis.couñago on 26/01/2018.
@@ -12,19 +15,22 @@ import android.support.constraint.solver.widgets.Rectangle;
 
 public class block {
     private int position;
-    private Paint paint = new Paint();
+//        private Paint paint = new Paint();
     private GameView gameView;
     private int ySpeed = 0;
     private int width = 100, height = 100;
     private int x = 0, y = 0 - height;
     private boolean fixed = false;
-    private Rect rec;
+    private Rect rec, recBody;
+    private Bitmap bmp;
 
-    public block(GameView gameView, int position, int width) {
+    public block(GameView gameView, int position, int width, Bitmap bmp) {
         this.gameView = gameView;
         this.position = position;
         this.x = gameView.getColumns()[position];
         this.width = width;
+        this.bmp = bmp;
+        recBody = new Rect(0, 0, gameView.getWidth(), gameView.getHeight());
 
         // De pruebas, la altura igual al ancho
 //        this.height = width;
@@ -43,11 +49,11 @@ public class block {
                 gameView.setRows(position, height);
             }
         }
-        paint.setColor(Color.CYAN);
-        paint.setStrokeWidth(3);
-        rec = new Rect(x, y, x + width, y + height);
-        canvas.drawRect(rec, paint);
-
+            rec = new Rect(x, y, x + width, y + height);
+//        paint.setColor(Color.CYAN);
+//        paint.setStrokeWidth(3);
+        canvas.drawBitmap(bmp, x, y, null);
+//        canvas.drawRect(rec, paint);
     }
 
     public void setFixed(boolean fixed) {
