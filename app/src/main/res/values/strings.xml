@@ -1,6 +1,18 @@
 <resources>
-    <string name="app_name">BlockJumper</string>
+    <string name="app_name" translatable="false">BlockJumper</string>
     <string name="start">Play</string>
     <string name="highScore">High Score:</string>
     <string name="highScores">Leaderboards</string>
+    <string name="publish">Publish</string>
+    <string name="dotdot" translatable="false">:</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="name">Name</string>
+    <string name="registerHere">Click here to Register</string>
+    <string name="Points">Points</string>
+    <string name="yourPoints">Your Points:</string>
+    <string name="Login">Login</string>
+    <string name="Exit">Exit</string>
+    <string name="NotLogged">Not Logged In</string>
+    <string name="loggedAs">Logged as: </string>
 </resources>

@@ -116,7 +116,7 @@ public class PlayerSprite {
                             newX + width - 20 > comp.getX() &&
                             newX < comp.getX() + comp.getWidth() - 20) {
                         System.out.println("You lost");
-//                        ended = true;
+                        ended = true;
                     } else if (newX <= comp.getX() && newY + height - 10 > comp.getY()) {
                         // Estás a la izquierda, bloque a la derecha
                         newX = comp.getX() - width;

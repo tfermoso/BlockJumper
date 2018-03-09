@@ -6,4 +6,5 @@ package denis.blockjumper.Firebase;
 
 public class FirebaseReference {
     public final static String NAME = "blockJumper";
+    public final static String USERS = "users";
 }

@@ -10,9 +10,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,132 +24,68 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import org.w3c.dom.Text;
 
-import denis.blockjumper.Adapters.LeaderboardListAdapter;
 import denis.blockjumper.Firebase.FirebaseReference;
 import denis.blockjumper.Firebase.User;
-import mehdi.sakout.fancybuttons.FancyButton;
 
-public class LeaderboardsActivity extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity {
     private final String PREFS_NAME = "MY_PREFS";
-    private FirebaseDatabase db;
-    private DatabaseReference blockDB;
-    private FirebaseAuth auth;
-    private List<User> userList;
-    private ListView userListView;
-    private FancyButton btn_publish;
-    private LeaderboardsActivity self = this;
-    private int score;
-    private TextView txtScoreLeaderBoard;
-    private ProgressBar progressBarLeader;
     private FirebaseUser fu;
+    private FirebaseDatabase db;
+    private FirebaseAuth auth;
+    private DatabaseReference blockDB;
+    private String name;
     private Toast toast;
-
-    private FirebaseAuth.AuthStateListener authStateListener;
+    private int score;
+    private Button btn_login;
+    private TextView txt_loged_in;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_leaderboards);
-        userListView = findViewById(R.id.list_leader);
-        btn_publish = findViewById(R.id.btn_publish);
-        txtScoreLeaderBoard = findViewById(R.id.txtScoreLeaderBoard);
-        progressBarLeader = findViewById(R.id.progressBarLeader);
-        userList = new ArrayList<>();
+        setContentView(R.layout.activity_settings);
+        btn_login = findViewById(R.id.btn_login_settings);
+        txt_loged_in = findViewById(R.id.txt_loged_in);
         db = FirebaseDatabase.getInstance();
-        auth = FirebaseAuth.getInstance();
         blockDB = db.getReference(FirebaseReference.USERS);
-
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        score = prefs.getInt("score", 0);
-
-        txtScoreLeaderBoard.setText(score + "");
-        // addValueEventListener() para recibir siempre
-        // addListenerForSingleValueEvent() para recibir una vez
-        Query query = blockDB.orderByChild("points").limitToFirst(10);
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                userList.clear();
-                for (DataSnapshot dsp : dataSnapshot.getChildren()) {
-                    User user = dsp.getValue(User.class);
-                    userList.add(user);
-                }
-                Collections.reverse(userList);
-                userListView.setAdapter(new LeaderboardListAdapter(R.layout.list_leaderboard, userList, self));
-                if (progressBarLeader.getVisibility() != View.GONE) {
-                    progressBarLeader.setVisibility(View.GONE);
-                    progressBarLeader = null;
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        auth = FirebaseAuth.getInstance();
         if (fu == null) {
             fu = auth.getCurrentUser();
         }
-        btn_publish.setOnClickListener(new View.OnClickListener() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        name = prefs.getString("name", null);
+        score = prefs.getInt("score", 0);
+        showUser();
+        btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (fu == null) {
-                    showLoginDialog();
-                } else {
-                    publishScore();
-                }
+                loginOrNot();
             }
         });
-
-
     }
 
-    private void publishScore() {
+    private void showUser() {
         if (fu != null) {
-            blockDB.child(fu.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    User user = dataSnapshot.getValue(User.class);
-                    SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-                    SharedPreferences.Editor editor = prefs.edit();
+            String text = R.string.loggedAs + " " + name;
+            txt_loged_in.setText(text);
+            btn_login.setText(R.string.Exit);
+        }
+    }
 
-                    if (!prefs.getString("name", null).equals(user.getName())) {
-                        editor.putString("name", user.getName());
-                        editor.apply();
-                    }
-                    if (user.getPoints() > score) {
-                        editor = prefs.edit();
-                        showToast("You have a better score on leaderboard");
-                        score = user.getPoints();
-                        editor.putInt("score", score);
-                        editor.apply();
-                    } else {
-                        user.setPoints(score);
-                        blockDB.child(fu.getUid())
-                                .setValue(user)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        showToast("Score sent: " + score);
-                                    }
-                                });
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    showToast(databaseError.getMessage());
-                }
-            });
+    private void loginOrNot() {
+        if (fu == null) {
+            showLoginDialog();
+        } else {
+            auth.signOut();
+            fu = auth.getCurrentUser();
+            if (fu == null) {
+                txt_loged_in.setText(R.string.NotLogged);
+                btn_login.setText(R.string.Login);
+            }
         }
     }
 
@@ -185,7 +120,7 @@ public class LeaderboardsActivity extends AppCompatActivity {
                                         public void onSuccess(AuthResult authResult) {
                                             fu = authResult.getUser();
                                             dialog.dismiss();
-                                            publishScore();
+                                            getUserName();
                                         }
                                     })
                                     .addOnFailureListener(new OnFailureListener() {
@@ -250,7 +185,7 @@ public class LeaderboardsActivity extends AppCompatActivity {
                                                         public void onSuccess(Void aVoid) {
                                                             fu = authResult.getUser();
                                                             dialog.dismiss();
-                                                            publishScore();
+                                                            getUserName();
                                                         }
                                                     })
                                                     .addOnFailureListener(new OnFailureListener() {
@@ -282,5 +217,27 @@ public class LeaderboardsActivity extends AppCompatActivity {
         toast = Toast.makeText(getBaseContext(), message, Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
+    }
+
+    private void getUserName() {
+        blockDB.child(fu.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                name = user.getName();
+                SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+                if (!prefs.getString("name", "").equals(user.getName())) {
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("name", user.getName());
+                    editor.apply();
+                }
+                showUser();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }

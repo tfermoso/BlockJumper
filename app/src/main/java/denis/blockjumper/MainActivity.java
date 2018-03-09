@@ -2,26 +2,19 @@ package denis.blockjumper;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import denis.blockjumper.Firebase.FirebaseReference;
 import mehdi.sakout.fancybuttons.FancyButton;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private FancyButton btn_start, btn_highscores;
+    private FancyButton btn_start, btn_highscores, btn_settings;
     private TextView txt_score;
     private final String PREFS_NAME = "MY_PREFS";
-    FirebaseDatabase db;
-    DatabaseReference blockDB;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,13 +24,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         btn_start = findViewById(R.id.btn_start);
         btn_highscores = findViewById(R.id.btn_highscores);
+        btn_settings = findViewById(R.id.btn_settings);
         txt_score = findViewById(R.id.txt_score);
         btn_start.setOnClickListener(this);
         btn_highscores.setOnClickListener(this);
+        btn_settings.setOnClickListener(this);
         putScore();
-
-        db = FirebaseDatabase.getInstance();
-        blockDB = db.getReference(FirebaseReference.NAME);
     }
 
     @Override
@@ -58,6 +50,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(intent);
         } else if (v.getId() == R.id.btn_highscores){
             Intent intent = new Intent(MainActivity.this, LeaderboardsActivity.class);
+            startActivity(intent);
+        } else if (v.getId() == R.id.btn_settings){
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
         }
     }

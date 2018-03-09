@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "625093515834",
-    "firebase_url": "https://appfirebase-bbdf8.firebaseio.com",
-    "project_id": "appfirebase-bbdf8",
-    "storage_bucket": "appfirebase-bbdf8.appspot.com"
+    "project_number": "283891889718",
+    "firebase_url": "https://blockjumper-f3f65.firebaseio.com",
+    "project_id": "blockjumper-f3f65",
+    "storage_bucket": "blockjumper-f3f65.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:625093515834:android:f8069989f6c27519",
+        "mobilesdk_app_id": "1:283891889718:android:4f90ebd954c2f9ec",
         "android_client_info": {
           "package_name": "denis.blockjumper"
         }
       },
       "oauth_client": [
         {
-          "client_id": "625093515834-dvmiblfmo7ij0836amiiocr54u1vfsms.apps.googleusercontent.com",
+          "client_id": "283891889718-jiplun7rm5guk93fr1t1nvcovfo6pb5s.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "denis.blockjumper",
@@ -23,13 +23,13 @@
           }
         },
         {
-          "client_id": "625093515834-jvskoscdt9h999psv5pbs8m24k67hhm4.apps.googleusercontent.com",
+          "client_id": "283891889718-psnnjgg7mecbbfirn0h6joc0ufc0ngfc.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAMJ5WmYD7mXiZ-XUPldloly9lFdO7HY64"
+          "current_key": "AIzaSyCjpE5EI3CWstXcugVG8QEI4ML5n-HxnRw"
         }
       ],
       "services": {
@@ -40,7 +40,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "625093515834-jvskoscdt9h999psv5pbs8m24k67hhm4.apps.googleusercontent.com",
+              "client_id": "283891889718-psnnjgg7mecbbfirn0h6joc0ufc0ngfc.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
