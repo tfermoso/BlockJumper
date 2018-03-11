@@ -35,19 +35,16 @@ import java.util.List;
 import denis.blockjumper.Adapters.LeaderboardListAdapter;
 import denis.blockjumper.Firebase.FirebaseReference;
 import denis.blockjumper.Firebase.User;
+import denis.blockjumper.Globals.Prefs;
 import mehdi.sakout.fancybuttons.FancyButton;
 
 public class LeaderboardsActivity extends AppCompatActivity {
-    private final String PREFS_NAME = "MY_PREFS";
-    private FirebaseDatabase db;
     private DatabaseReference blockDB;
     private FirebaseAuth auth;
     private List<User> userList;
     private ListView userListView;
-    private FancyButton btn_publish;
     private LeaderboardsActivity self = this;
     private int score;
-    private TextView txtScoreLeaderBoard;
     private ProgressBar progressBarLeader;
     private FirebaseUser fu;
     private Toast toast;
@@ -61,15 +58,15 @@ public class LeaderboardsActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_leaderboards);
         userListView = findViewById(R.id.list_leader);
-        btn_publish = findViewById(R.id.btn_publish);
-        txtScoreLeaderBoard = findViewById(R.id.txtScoreLeaderBoard);
+        FancyButton btn_publish = findViewById(R.id.btn_publish);
+        TextView txtScoreLeaderBoard = findViewById(R.id.txtScoreLeaderBoard);
         progressBarLeader = findViewById(R.id.progressBarLeader);
         userList = new ArrayList<>();
-        db = FirebaseDatabase.getInstance();
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
         auth = FirebaseAuth.getInstance();
         blockDB = db.getReference(FirebaseReference.USERS);
 
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences(Prefs.PREFS_NAME, MODE_PRIVATE);
         score = prefs.getInt("score", 0);
 
         txtScoreLeaderBoard.setText(score + "");
@@ -120,10 +117,10 @@ public class LeaderboardsActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     User user = dataSnapshot.getValue(User.class);
-                    SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+                    SharedPreferences prefs = getSharedPreferences(Prefs.PREFS_NAME, MODE_PRIVATE);
                     SharedPreferences.Editor editor = prefs.edit();
 
-                    if (!prefs.getString("name", null).equals(user.getName())) {
+                    if (!prefs.getString("name", "").equals(user.getName())) {
                         editor.putString("name", user.getName());
                         editor.apply();
                     }

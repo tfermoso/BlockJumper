@@ -30,11 +30,10 @@ import org.w3c.dom.Text;
 
 import denis.blockjumper.Firebase.FirebaseReference;
 import denis.blockjumper.Firebase.User;
+import denis.blockjumper.Globals.Prefs;
 
 public class SettingsActivity extends AppCompatActivity {
-    private final String PREFS_NAME = "MY_PREFS";
     private FirebaseUser fu;
-    private FirebaseDatabase db;
     private FirebaseAuth auth;
     private DatabaseReference blockDB;
     private String name;
@@ -50,14 +49,14 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
         btn_login = findViewById(R.id.btn_login_settings);
         txt_loged_in = findViewById(R.id.txt_loged_in);
-        db = FirebaseDatabase.getInstance();
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
         blockDB = db.getReference(FirebaseReference.USERS);
         auth = FirebaseAuth.getInstance();
         if (fu == null) {
             fu = auth.getCurrentUser();
         }
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        name = prefs.getString("name", null);
+        SharedPreferences prefs = getSharedPreferences(Prefs.PREFS_NAME, MODE_PRIVATE);
+        name = prefs.getString("name", "");
         score = prefs.getInt("score", 0);
         showUser();
         btn_login.setOnClickListener(new View.OnClickListener() {
@@ -70,7 +69,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void showUser() {
         if (fu != null) {
-            String text = R.string.loggedAs + " " + name;
+            String text = getString(R.string.loggedAs) + " " + name;
             txt_loged_in.setText(text);
             btn_login.setText(R.string.Exit);
         }
@@ -83,10 +82,32 @@ public class SettingsActivity extends AppCompatActivity {
             auth.signOut();
             fu = auth.getCurrentUser();
             if (fu == null) {
-                txt_loged_in.setText(R.string.NotLogged);
-                btn_login.setText(R.string.Login);
+                confirmLogout();
             }
         }
+    }
+
+    private void confirmLogout() {
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Confirm Logout")
+                .setMessage("You will lose your current score, do you want to continue?")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SharedPreferences prefs = getSharedPreferences(Prefs.PREFS_NAME, MODE_PRIVATE);
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putInt("score", 0);
+                        editor.putString("name", "");
+                        editor.apply();
+                        score = 0;
+                        txt_loged_in.setText(R.string.NotLogged);
+                        btn_login.setText(R.string.Login);
+                    }
+                })
+                .setNegativeButton("CANCEL", null)
+                .create();
+        dialog.show();
+
     }
 
     private void showLoginDialog() {
@@ -224,11 +245,18 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
-                name = user.getName();
-                SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-                if (!prefs.getString("name", "").equals(user.getName())) {
+                SharedPreferences prefs = getSharedPreferences(Prefs.PREFS_NAME, MODE_PRIVATE);
+                if (!name.equals(user.getName())) {
+                    name = user.getName();
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putString("name", user.getName());
+                    editor.apply();
+                }
+                if (user.getPoints() > score) {
+                    showToast("Score updated");
+                    score = user.getPoints();
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putInt("score", user.getPoints());
                     editor.apply();
                 }
                 showUser();

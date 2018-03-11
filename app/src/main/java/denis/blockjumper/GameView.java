@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.media.MediaPlayer;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Random;
 
+import denis.blockjumper.Globals.Prefs;
 import denis.blockjumper.SpirtesClass.PlayerSprite;
 import denis.blockjumper.SpirtesClass.block;
 import denis.blockjumper.Thread.GameLoopThread;
@@ -28,8 +30,6 @@ import static android.content.Context.MODE_PRIVATE;
  */
 
 public class GameView extends SurfaceView {
-    private String PREFS_NAME = "MY_PREFS";
-    private SurfaceHolder holder;
     private GameLoopThread gameLoopThread;
     private GameView self = this;
     private PlayerSprite playerSprite;
@@ -48,14 +48,20 @@ public class GameView extends SurfaceView {
     private boolean created = false;
     private Bitmap background, block_image;
 
+    private MediaPlayer mediaPlayer;
+
     public GameView(final Context context) {
         super(context);
-        holder = getHolder();
+        SurfaceHolder holder = getHolder();
 
         pointsPaint = new Paint();
         pointsPaint.setColor(Color.WHITE);
         pointsPaint.setTextSize(60);
         pointsPaint.setTextAlign(Paint.Align.CENTER);
+
+        //Backgound sound
+        mediaPlayer = MediaPlayer.create(getContext(), R.raw.gameplay_looping);
+        mediaPlayer.start();
 
         holder.addCallback(new SurfaceHolder.Callback() {
             @Override
@@ -69,11 +75,11 @@ public class GameView extends SurfaceView {
                     float aspectRatio = b.getWidth() / (float) b.getHeight();
                     int width = WIDTH;
                     int height = Math.round(width / aspectRatio);
-                    background = Bitmap.createScaledBitmap(b, width, height, false).copy(Bitmap.Config.RGB_565,true);
+                    background = Bitmap.createScaledBitmap(b, width, height, false).copy(Bitmap.Config.RGB_565, true);
 
                     columnWidth = WIDTH / numberOfColumns;
 
-                    Bitmap bl = BitmapFactory.decodeResource(getResources(), R.drawable.block_gameold).copy(Bitmap.Config.RGB_565,true);
+                    Bitmap bl = BitmapFactory.decodeResource(getResources(), R.drawable.block_gameold).copy(Bitmap.Config.RGB_565, true);
                     block_image = Bitmap.createScaledBitmap(bl, columnWidth, 100, false);
 
                     columns = new int[numberOfColumns];
@@ -102,6 +108,7 @@ public class GameView extends SurfaceView {
 
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
+                mediaPlayer.stop();
                 boolean retry = true;
                 gameLoopThread.setRunning(false);
 //                while (retry) {
@@ -163,7 +170,7 @@ public class GameView extends SurfaceView {
             while (rows[random] <= HEIGHT / 3) {
                 random = rm.nextInt(numberOfColumns);
             }
-            block blo = new block(this, random, columnWidth,block_image);
+            block blo = new block(this, random, columnWidth, block_image);
             columnsBlock.get(random).add(blo);
             i = 0;
         }
@@ -233,10 +240,14 @@ public class GameView extends SurfaceView {
     public void endGame() {
         System.out.println("Points: " + points);
         gameLoopThread.setRunning(false);
+        // Stop music
+        mediaPlayer.stop();
+        mediaPlayer = MediaPlayer.create(getContext(),R.raw.lose_music);
+        mediaPlayer.start();
     }
 
     public void finalStop() {
-        SharedPreferences prefs = getContext().getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences prefs = getContext().getSharedPreferences(Prefs.PREFS_NAME, MODE_PRIVATE);
         int scoreOld = prefs.getInt("score", 0);
         System.out.println(scoreOld + " - " + points);
         if (scoreOld < points) {
@@ -244,7 +255,7 @@ public class GameView extends SurfaceView {
             editor.putInt("score", points);
             editor.apply();
         }
-        Toast.makeText(getContext(), "Puntos: " + points, Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), "Score: " + points, Toast.LENGTH_LONG).show();
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
