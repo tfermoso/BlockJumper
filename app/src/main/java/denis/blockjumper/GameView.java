@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.media.MediaPlayer;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -33,19 +34,22 @@ public class GameView extends SurfaceView {
     private GameLoopThread gameLoopThread;
     private GameView self = this;
     private PlayerSprite playerSprite;
-    public int GRAVITY = 40;
     private int WIDTH, HEIGHT;
     private int points = 0;
     private Paint pointsPaint = new Paint();
-    private int numberOfColumns = 8;
     private int columnWidth;
     private int columns[];
     private ArrayList<ArrayList<block>> columnsBlock;
     private int rows[];
     private Random rm = new Random();
     private int i = 0;
+    // Default options
+    public int GRAVITY = 40;
+    private int numberOfColumns = 8;
     private int BOX_INTERVAL = 50, MAX_INTERVAL_BOX = 100;
-    private boolean created = false;
+    private boolean BOXED_BOX = false, GOD_MODE = false;
+    // ---------------
+    private boolean created = false, customGame = false;
     private Bitmap background, block_image;
 
     private MediaPlayer mediaPlayer;
@@ -54,10 +58,31 @@ public class GameView extends SurfaceView {
         super(context);
         SurfaceHolder holder = getHolder();
 
+        SharedPreferences prefs = getContext().getSharedPreferences(Prefs.PREFS_NAME, MODE_PRIVATE);
+        numberOfColumns = prefs.getInt(Prefs.COLUMN_NUMBER, 8);
+        BOX_INTERVAL = prefs.getInt(Prefs.BOX_INTERVAL, 50);
+        MAX_INTERVAL_BOX = prefs.getInt(Prefs.MAX_BOX_INTERVAL, 100);
+        GRAVITY = prefs.getInt(Prefs.MAX_GRAVITY, 40);
+        BOXED_BOX = prefs.getBoolean(Prefs.BOXED_BOX, false);
+        GOD_MODE = prefs.getBoolean(Prefs.GOD_MODE, false);
+
+        if (numberOfColumns != 8 ||
+                BOX_INTERVAL != 50 ||
+                MAX_INTERVAL_BOX != 100 ||
+                GRAVITY != 40 ||
+                BOXED_BOX ||
+                GOD_MODE) {
+            customGame = true;
+            Toast toast = Toast.makeText(getContext(), "Custom game", Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+        }
+
         pointsPaint = new Paint();
         pointsPaint.setColor(Color.WHITE);
         pointsPaint.setTextSize(60);
         pointsPaint.setTextAlign(Paint.Align.CENTER);
+
 
         //Backgound sound
         mediaPlayer = MediaPlayer.create(getContext(), R.raw.gameplay_looping);
@@ -80,7 +105,11 @@ public class GameView extends SurfaceView {
                     columnWidth = WIDTH / numberOfColumns;
 
                     Bitmap bl = BitmapFactory.decodeResource(getResources(), R.drawable.block_gameold).copy(Bitmap.Config.RGB_565, true);
-                    block_image = Bitmap.createScaledBitmap(bl, columnWidth, 100, false);
+                    if (BOXED_BOX) {
+                        block_image = Bitmap.createScaledBitmap(bl, columnWidth, columnWidth, false);
+                    } else {
+                        block_image = Bitmap.createScaledBitmap(bl, columnWidth, 100, false);
+                    }
 
                     columns = new int[numberOfColumns];
                     columnsBlock = new ArrayList<>();
@@ -91,6 +120,9 @@ public class GameView extends SurfaceView {
                         rows[i] = self.getHeight();
                     }
                     playerSprite = new PlayerSprite(self);
+                    if (GOD_MODE) {
+                        playerSprite.setGodMode(true);
+                    }
                     created = true;
                 }
                 if (gameLoopThread == null || !gameLoopThread.isRunning()) {
@@ -109,7 +141,7 @@ public class GameView extends SurfaceView {
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
                 mediaPlayer.stop();
-                boolean retry = true;
+//                boolean retry = true;
                 gameLoopThread.setRunning(false);
 //                while (retry) {
 //                    try {
@@ -170,7 +202,7 @@ public class GameView extends SurfaceView {
             while (rows[random] <= HEIGHT / 3) {
                 random = rm.nextInt(numberOfColumns);
             }
-            block blo = new block(this, random, columnWidth, block_image);
+            block blo = new block(this, random, columnWidth, block_image, BOXED_BOX);
             columnsBlock.get(random).add(blo);
             i = 0;
         }
@@ -182,6 +214,7 @@ public class GameView extends SurfaceView {
 
     @Override
     public void draw(Canvas canvas) {
+
         super.draw(canvas);
 //        canvas.drawColor(Color.BLACK);
 //        Rect rect = new Rect(0,0,WIDTH,HEIGHT);
@@ -242,26 +275,31 @@ public class GameView extends SurfaceView {
         gameLoopThread.setRunning(false);
         // Stop music
         mediaPlayer.stop();
-        mediaPlayer = MediaPlayer.create(getContext(),R.raw.lose_music);
+        mediaPlayer = MediaPlayer.create(getContext(), R.raw.lose_music);
         mediaPlayer.start();
-    }
-
-    public void finalStop() {
-        SharedPreferences prefs = getContext().getSharedPreferences(Prefs.PREFS_NAME, MODE_PRIVATE);
-        int scoreOld = prefs.getInt("score", 0);
-        System.out.println(scoreOld + " - " + points);
-        if (scoreOld < points) {
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putInt("score", points);
-            editor.apply();
-        }
-        Toast.makeText(getContext(), "Score: " + points, Toast.LENGTH_LONG).show();
+        // Wait 2 seconds
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public void finalStop() {
+        if (!customGame) {
+            SharedPreferences prefs = getContext().getSharedPreferences(Prefs.PREFS_NAME, MODE_PRIVATE);
+            int scoreOld = prefs.getInt(Prefs.SCORE, 0);
+            System.out.println(scoreOld + " - " + points);
+            if (scoreOld < points) {
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putInt(Prefs.SCORE, points);
+                editor.apply();
+            }
+        }
+        Toast.makeText(getContext(), "Score: " + points, Toast.LENGTH_LONG).show();
+
         Activity activity = (Activity) getContext();
+        mediaPlayer.stop();
         activity.finish();
     }
 }

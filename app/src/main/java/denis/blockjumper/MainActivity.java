@@ -5,9 +5,12 @@ import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
+
+import java.io.IOException;
 
 import denis.blockjumper.Globals.Prefs;
 import mehdi.sakout.fancybuttons.FancyButton;
@@ -16,6 +19,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private FancyButton btn_start, btn_highscores, btn_settings;
     private TextView txt_score;
     private MediaPlayer mediaPlayer;
+    private Boolean buliMusic = true;
+    private int length = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +32,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        mediaPlayer = MediaPlayer.create(this, R.raw.game_menu);
 //        mediaPlayer.start();
 
-        mediaPlayer = MediaPlayer.create(this, R.raw.game_menu);
+//        mediaPlayer = MediaPlayer.create(this, R.raw.game_menu);
+
         btn_start = findViewById(R.id.btn_start);
         btn_highscores = findViewById(R.id.btn_highscores);
         btn_settings = findViewById(R.id.btn_settings);
@@ -35,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_start.setOnClickListener(this);
         btn_highscores.setOnClickListener(this);
         btn_settings.setOnClickListener(this);
-        putScore();
+
     }
 
     @Override
@@ -47,23 +53,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onStop() {
         super.onStop();
-//        mediaPlayer.pause();
+        mediaPlayer.pause();
     }
 
     @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        if (!mediaPlayer.isPlaying()) {
-//            mediaPlayer = MediaPlayer.create(this, R.raw.game_menu);
-            mediaPlayer.start();
-        }
-
+    protected void onStart() {
+        super.onStart();
+        mediaPlayer = MediaPlayer.create(this, R.raw.game_menu);
+        mediaPlayer.seekTo(length);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.start();
         putScore();
     }
 
     private void putScore() {
         SharedPreferences prefs = getSharedPreferences(Prefs.PREFS_NAME, MODE_PRIVATE);
-        int score = prefs.getInt("score", 0);
+        int score = prefs.getInt(Prefs.SCORE, 0);
         System.out.println(score);
         txt_score.setText(score + "");
     }
@@ -72,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         if (v.getId() == R.id.btn_start) {
             mediaPlayer.stop();
+            length = 0;
             Intent intent = new Intent(MainActivity.this, GameActivity.class);
             startActivity(intent);
         } else if (v.getId() == R.id.btn_highscores) {

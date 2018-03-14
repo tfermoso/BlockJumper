@@ -15,4 +15,13 @@
     <string name="Exit">Exit</string>
     <string name="NotLogged">Not Logged In</string>
     <string name="loggedAs">Logged as: </string>
+    <string name="gameOptions">Game Options</string>
+    <string name="columnNumber">Number of columns</string>
+    <string name="boxInterval">Box interval</string>
+    <string name="maxBoxInterval">Max box interval</string>
+    <string name="gravity">Max gravity</string>
+    <string name="save">Save</string>
+    <string name="defaultT">Default</string>
+    <string name="godMode">God Mode</string>
+    <string name="squareBox">Square Box</string>
 </resources>

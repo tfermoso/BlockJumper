@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.List;
 
 import denis.blockjumper.Adapters.LeaderboardListAdapter;
-import denis.blockjumper.Firebase.FirebaseReference;
 import denis.blockjumper.Firebase.User;
 import denis.blockjumper.Globals.Prefs;
 import mehdi.sakout.fancybuttons.FancyButton;
@@ -49,11 +48,11 @@ public class LeaderboardsActivity extends AppCompatActivity {
     private FirebaseUser fu;
     private Toast toast;
 
-    private FirebaseAuth.AuthStateListener authStateListener;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_leaderboards);
@@ -64,10 +63,10 @@ public class LeaderboardsActivity extends AppCompatActivity {
         userList = new ArrayList<>();
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         auth = FirebaseAuth.getInstance();
-        blockDB = db.getReference(FirebaseReference.USERS);
+        blockDB = db.getReference(Prefs.USERS);
 
         SharedPreferences prefs = getSharedPreferences(Prefs.PREFS_NAME, MODE_PRIVATE);
-        score = prefs.getInt("score", 0);
+        score = prefs.getInt(Prefs.SCORE, 0);
 
         txtScoreLeaderBoard.setText(score + "");
         // addValueEventListener() para recibir siempre
@@ -83,7 +82,7 @@ public class LeaderboardsActivity extends AppCompatActivity {
                 }
                 Collections.reverse(userList);
                 userListView.setAdapter(new LeaderboardListAdapter(R.layout.list_leaderboard, userList, self));
-                if (progressBarLeader.getVisibility() != View.GONE) {
+                if (progressBarLeader != null && progressBarLeader.getVisibility() != View.GONE) {
                     progressBarLeader.setVisibility(View.GONE);
                     progressBarLeader = null;
                 }
@@ -119,16 +118,15 @@ public class LeaderboardsActivity extends AppCompatActivity {
                     User user = dataSnapshot.getValue(User.class);
                     SharedPreferences prefs = getSharedPreferences(Prefs.PREFS_NAME, MODE_PRIVATE);
                     SharedPreferences.Editor editor = prefs.edit();
-
-                    if (!prefs.getString("name", "").equals(user.getName())) {
-                        editor.putString("name", user.getName());
+                    if (!prefs.getString(Prefs.NAME, "").equals(user.getName())) {
+                        editor.putString(Prefs.NAME, user.getName());
                         editor.apply();
                     }
                     if (user.getPoints() > score) {
                         editor = prefs.edit();
                         showToast("You have a better score on leaderboard");
                         score = user.getPoints();
-                        editor.putInt("score", score);
+                        editor.putInt(Prefs.SCORE, score);
                         editor.apply();
                     } else {
                         user.setPoints(score);

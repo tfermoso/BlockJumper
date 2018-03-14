@@ -18,6 +18,7 @@ import denis.blockjumper.SpirtesClass.block;
 public class PlayerSprite {
     private static final int BMP_ROWS = 4, BMP_COLUMNS = 3;
     private static final int MAX_SPEED_X_L = -20, MAX_SPEED_X_R = 20;
+    private boolean GOD_MODE = false;
     private int x = 0, y = 0, xSpeed = 0, ySpeed = 0;
     private int MAP_WIDTH, MAP_HEIGHT, width, height;
     private int currentColumn = 1, currentRow = 0;
@@ -116,7 +117,10 @@ public class PlayerSprite {
                             newX + width - 20 > comp.getX() &&
                             newX < comp.getX() + comp.getWidth() - 20) {
                         System.out.println("You lost");
-                        ended = true;
+                        if (!GOD_MODE) {
+
+                            ended = true;
+                        }
                     } else if (newX <= comp.getX() && newY + height - 10 > comp.getY()) {
                         // Estás a la izquierda, bloque a la derecha
                         newX = comp.getX() - width;
@@ -167,5 +171,9 @@ public class PlayerSprite {
 
     public int getMoving() {
         return moving;
+    }
+
+    public void setGodMode(boolean godMode) {
+        this.GOD_MODE = godMode;
     }
 }

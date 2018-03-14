@@ -24,7 +24,7 @@ public class block {
     private Rect rec, recBody;
     private Bitmap bmp;
 
-    public block(GameView gameView, int position, int width, Bitmap bmp) {
+    public block(GameView gameView, int position, int width, Bitmap bmp,boolean boxed) {
         this.gameView = gameView;
         this.position = position;
         this.x = gameView.getColumns()[position];
@@ -33,8 +33,11 @@ public class block {
         recBody = new Rect(0, 0, gameView.getWidth(), gameView.getHeight());
 
         // De pruebas, la altura igual al ancho
-//        this.height = width;
-//        this.y = 0 - width;
+        if (boxed) {
+
+            this.height = width;
+            this.y = 0 - width;
+        }
     }
 
     public void draw(Canvas canvas) {
@@ -87,4 +90,5 @@ public class block {
     public int getWidth() {
         return width;
     }
+
 }
