@@ -33,7 +33,7 @@ public class GameLoopThread extends AsyncTask {
 
     @Override
     protected Object doInBackground(Object[] objects) {
-        System.out.println("Corriendo!");
+        System.out.println("Running!");
         long tiksPS = 1000 / FPS;
         long startTime;
         long sleepTime;
@@ -56,7 +56,6 @@ public class GameLoopThread extends AsyncTask {
                 }
             }
             sleepTime = tiksPS - (System.currentTimeMillis() - startTime);
-            System.out.println(tiksPS + " - " + (System.currentTimeMillis() - startTime) + " = " + sleepTime);
             try {
                 if (sleepTime > 0) {
                     Thread.sleep(sleepTime);
@@ -77,6 +76,6 @@ public class GameLoopThread extends AsyncTask {
     protected void onPostExecute(Object o) {
         super.onPostExecute(o);
         view.finalStop();
-        System.out.println("He dejado de funcionar");
+        System.out.println("Stop thread");
     }
 }

@@ -113,12 +113,15 @@ public class PlayerSprite {
                     continue;
                 }
                 if (comp.isIntersection(temprec)) {
+                    if (comp.isCoin()) {
+                        ar.remove(comp);
+                        continue;
+                    }
                     if (newY + height > comp.getY() + comp.getHeight() &&
                             newX + width - 20 > comp.getX() &&
                             newX < comp.getX() + comp.getWidth() - 20) {
                         System.out.println("You lost");
                         if (!GOD_MODE) {
-
                             ended = true;
                         }
                     } else if (newX <= comp.getX() && newY + height - 10 > comp.getY()) {

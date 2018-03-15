@@ -35,12 +35,9 @@ public class GameView extends SurfaceView {
     private GameView self = this;
     private PlayerSprite playerSprite;
     private int WIDTH, HEIGHT;
-    private int points = 0;
+    private int points = 0, columnWidth, columns[],rows[];
     private Paint pointsPaint = new Paint();
-    private int columnWidth;
-    private int columns[];
     private ArrayList<ArrayList<block>> columnsBlock;
-    private int rows[];
     private Random rm = new Random();
     private int i = 0;
     // Default options
@@ -49,8 +46,8 @@ public class GameView extends SurfaceView {
     private int BOX_INTERVAL = 50, MAX_INTERVAL_BOX = 100;
     private boolean BOXED_BOX = false, GOD_MODE = false;
     // ---------------
-    private boolean created = false, customGame = false;
-    private Bitmap background, block_image;
+    private boolean created = false, customGame = false, nextCoin = false;
+    private Bitmap background, block_image, coin_image;
 
     private MediaPlayer mediaPlayer;
 
@@ -91,6 +88,12 @@ public class GameView extends SurfaceView {
         holder.addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
+                if (numberOfColumns == 0) {
+                    Toast.makeText(getContext(), "Can't create a game with 0 columns", Toast.LENGTH_SHORT).show();
+                    Activity activity = (Activity) getContext();
+                    mediaPlayer.stop();
+                    activity.finish();
+                }
                 if (!created) {
                     points = 0;
                     WIDTH = self.getWidth();
@@ -102,14 +105,13 @@ public class GameView extends SurfaceView {
                     int height = Math.round(width / aspectRatio);
                     background = Bitmap.createScaledBitmap(b, width, height, false).copy(Bitmap.Config.RGB_565, true);
 
-                    columnWidth = WIDTH / numberOfColumns;
+                    columnWidth = (int) Math.floor(WIDTH / numberOfColumns);
+                    System.out.println(WIDTH + " / " + numberOfColumns + " = " + columnWidth);
 
                     Bitmap bl = BitmapFactory.decodeResource(getResources(), R.drawable.block_gameold).copy(Bitmap.Config.RGB_565, true);
-                    if (BOXED_BOX) {
-                        block_image = Bitmap.createScaledBitmap(bl, columnWidth, columnWidth, false);
-                    } else {
-                        block_image = Bitmap.createScaledBitmap(bl, columnWidth, 100, false);
-                    }
+                    Bitmap bl2 = BitmapFactory.decodeResource(getResources(), R.drawable.silver_coin).copy(Bitmap.Config.ARGB_8888, true);
+                    block_image = Bitmap.createScaledBitmap(bl, columnWidth, (BOXED_BOX) ? columnWidth : 100, false);
+                    coin_image = Bitmap.createScaledBitmap(bl2, columnWidth, (BOXED_BOX) ? columnWidth : 100, false);
 
                     columns = new int[numberOfColumns];
                     columnsBlock = new ArrayList<>();
@@ -198,15 +200,31 @@ public class GameView extends SurfaceView {
     private void addBlock() {
         i++;
         if (i > BOX_INTERVAL) {
-            int random = rm.nextInt(numberOfColumns);
-            while (rows[random] <= HEIGHT / 3) {
-                random = rm.nextInt(numberOfColumns);
+            int total = 0;
+            for (int i = 0; i < rows.length; i++) {
+                if (rows[i] <= HEIGHT / 3) {
+                    total++;
+                }
             }
-            block blo = new block(this, random, columnWidth, block_image, BOXED_BOX);
-            columnsBlock.get(random).add(blo);
-            i = 0;
+            if (total < numberOfColumns) {
+                int random = rm.nextInt(numberOfColumns);
+                while (rows[random] <= HEIGHT / 3) {
+                    System.out.println("CANT PUT THERE");
+                    random = rm.nextInt(numberOfColumns);
+                }
+                block blo;
+                if (nextCoin) {
+                    nextCoin = false;
+                    blo = new block(this, random, columnWidth, coin_image, BOXED_BOX, true);
+                } else {
+                    blo = new block(this, random, columnWidth, block_image, BOXED_BOX, false);
+                }
+                columnsBlock.get(random).add(blo);
+                i = 0;
+            }
         }
-        if (points % MAX_INTERVAL_BOX == 0 && BOX_INTERVAL > 15) {
+
+        if (MAX_INTERVAL_BOX != 0 && points % MAX_INTERVAL_BOX == 0 && BOX_INTERVAL > 15) {
             BOX_INTERVAL--;
             GRAVITY++;
         }
@@ -250,7 +268,9 @@ public class GameView extends SurfaceView {
         }
 
         points++;
-
+        if (points % 200 == 0){
+            nextCoin = true;
+        }
         canvas.drawText(points + "", WIDTH / 2, 100, pointsPaint);
     }
 

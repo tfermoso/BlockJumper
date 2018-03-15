@@ -15,26 +15,26 @@ import denis.blockjumper.GameView;
 
 public class block {
     private int position;
-//        private Paint paint = new Paint();
+    //        private Paint paint = new Paint();
     private GameView gameView;
     private int ySpeed = 0;
     private int width = 100, height = 100;
     private int x = 0, y = 0 - height;
-    private boolean fixed = false;
+    private boolean fixed = false, isCoin;
     private Rect rec, recBody;
     private Bitmap bmp;
 
-    public block(GameView gameView, int position, int width, Bitmap bmp,boolean boxed) {
+    public block(GameView gameView, int position, int width, Bitmap bmp, boolean boxed, boolean isCoin) {
         this.gameView = gameView;
         this.position = position;
         this.x = gameView.getColumns()[position];
         this.width = width;
         this.bmp = bmp;
+        this.isCoin = isCoin;
         recBody = new Rect(0, 0, gameView.getWidth(), gameView.getHeight());
 
         // De pruebas, la altura igual al ancho
         if (boxed) {
-
             this.height = width;
             this.y = 0 - width;
         }
@@ -49,14 +49,13 @@ public class block {
             if (y >= gameView.getRows()[position] - height) {
                 y = gameView.getRows()[position] - height;
                 fixed = true;
-                gameView.setRows(position, height);
+                if (!isCoin) {
+                    gameView.setRows(position, height);
+                }
             }
         }
-            rec = new Rect(x, y, x + width, y + height);
-//        paint.setColor(Color.CYAN);
-//        paint.setStrokeWidth(3);
+        rec = new Rect(x, y, x + width, y + height);
         canvas.drawBitmap(bmp, x, y, null);
-//        canvas.drawRect(rec, paint);
     }
 
     public void setFixed(boolean fixed) {
@@ -91,4 +90,7 @@ public class block {
         return width;
     }
 
+    public boolean isCoin() {
+        return isCoin;
+    }
 }

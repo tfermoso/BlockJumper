@@ -19,7 +19,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private FancyButton btn_start, btn_highscores, btn_settings;
     private TextView txt_score;
     private MediaPlayer mediaPlayer;
-    private Boolean buliMusic = true;
     private int length = 0;
 
     @Override
@@ -27,12 +26,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
-
-        // Music
-//        mediaPlayer = MediaPlayer.create(this, R.raw.game_menu);
-//        mediaPlayer.start();
-
-//        mediaPlayer = MediaPlayer.create(this, R.raw.game_menu);
 
         btn_start = findViewById(R.id.btn_start);
         btn_highscores = findViewById(R.id.btn_highscores);
@@ -81,9 +74,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Intent intent = new Intent(MainActivity.this, GameActivity.class);
             startActivity(intent);
         } else if (v.getId() == R.id.btn_highscores) {
+            length = mediaPlayer.getCurrentPosition();
             Intent intent = new Intent(MainActivity.this, LeaderboardsActivity.class);
             startActivity(intent);
         } else if (v.getId() == R.id.btn_settings) {
+            length = mediaPlayer.getCurrentPosition();
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
         }
