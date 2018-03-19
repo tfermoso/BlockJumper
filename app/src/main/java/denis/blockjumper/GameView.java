@@ -46,8 +46,8 @@ public class GameView extends SurfaceView {
     private int BOX_INTERVAL = 50, MAX_INTERVAL_BOX = 100;
     private boolean BOXED_BOX = false, GOD_MODE = false;
     // ---------------
-    private boolean created = false, customGame = false, nextCoin = false;
-    private Bitmap background, block_image, coin_image;
+    private boolean created = false, customGame = false/*, nextCoin = false*/;
+    private Bitmap background, block_image /*, coin_image*/;
 
     private MediaPlayer mediaPlayer;
 
@@ -109,9 +109,9 @@ public class GameView extends SurfaceView {
                     System.out.println(WIDTH + " / " + numberOfColumns + " = " + columnWidth);
 
                     Bitmap bl = BitmapFactory.decodeResource(getResources(), R.drawable.block_gameold).copy(Bitmap.Config.RGB_565, true);
-                    Bitmap bl2 = BitmapFactory.decodeResource(getResources(), R.drawable.silver_coin).copy(Bitmap.Config.ARGB_8888, true);
+//                    Bitmap bl2 = BitmapFactory.decodeResource(getResources(), R.drawable.silver_coin).copy(Bitmap.Config.ARGB_8888, true);
                     block_image = Bitmap.createScaledBitmap(bl, columnWidth, (BOXED_BOX) ? columnWidth : 100, false);
-                    coin_image = Bitmap.createScaledBitmap(bl2, columnWidth, (BOXED_BOX) ? columnWidth : 100, false);
+//                    coin_image = Bitmap.createScaledBitmap(bl2, columnWidth, (BOXED_BOX) ? columnWidth : 100, false);
 
                     columns = new int[numberOfColumns];
                     columnsBlock = new ArrayList<>();
@@ -213,12 +213,12 @@ public class GameView extends SurfaceView {
                     random = rm.nextInt(numberOfColumns);
                 }
                 block blo;
-                if (nextCoin) {
-                    nextCoin = false;
-                    blo = new block(this, random, columnWidth, coin_image, BOXED_BOX, true);
-                } else {
+//                if (nextCoin) {
+//                    nextCoin = false;
+//                    blo = new block(this, random, columnWidth, coin_image, BOXED_BOX, true);
+//                } else {
                     blo = new block(this, random, columnWidth, block_image, BOXED_BOX, false);
-                }
+//                }
                 columnsBlock.get(random).add(blo);
                 i = 0;
             }
