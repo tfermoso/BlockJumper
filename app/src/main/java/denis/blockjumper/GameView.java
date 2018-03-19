@@ -268,9 +268,9 @@ public class GameView extends SurfaceView {
         }
 
         points++;
-        if (points % 200 == 0){
-            nextCoin = true;
-        }
+//        if (points % 200 == 0){
+//            nextCoin = true;
+//        }
         canvas.drawText(points + "", WIDTH / 2, 100, pointsPaint);
     }
 
